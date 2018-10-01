@@ -25,7 +25,7 @@ blocks:
       jobs:
         - name: Push Image
           commands:
-            - docker build example .
+            - docker build -t example .
             - docker tag example "${ECR_REGISTRY}:${SEMAPHORE_GIT_SHA:0:6}"
             - docker push "${ECR_REGISTRY}:${SEMAPHORE_GIT_SHA:0:6}"
 
