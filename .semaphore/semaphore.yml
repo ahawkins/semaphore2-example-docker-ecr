@@ -1,0 +1,31 @@
+version: "v1.0"
+name: First pipeline example
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+
+blocks:
+  - name: "Push Image"
+    task:
+      env_vars:
+        # TODO: change as required
+        - name: AWS_DEFAULT_REGION
+          value: ap-southeast-1
+        - name: ECR_REGISTRY
+          value: 828070532471.dkr.ecr.ap-southeast-1.amazonaws.com/semaphore2-ecr-example
+      secrets:
+        - name: aws
+      prologue:
+        commands:
+          - sudo pip install awscli
+          - checkout
+          - aws ecr get-login --no-include-email | bash
+
+      jobs:
+        - name: Push Image
+          commands:
+            - docker build example .
+            - docker tag example "${ECR_REGISTRY}:${SEMAPHORE_GIT_SHA:0:6}"
+            - docker push "${ECR_REGISTRY}:${SEMAPHORE_GIT_SHA:0:6}"
+
